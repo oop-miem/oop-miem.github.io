@@ -4,122 +4,8 @@
 <meta content="text/html" charset="utf-8">
 <meta name="viewport" content="width=device-width">
 <title>Методические рекомендации по ООП, II модуль</title>
-<style lang="css">
-body {
-	--fg: #557;
-	--bg: white;
-	//--fg-paramount: #87B;
-	--fg-paramount: #95B;
-	--fg-required: #38C;
-	--fg-optional: #598;
-	--fg-template: #C39;
-	--fg-link: #83C;
-	--fg-hint: #C83;
-	font-family: Sans-Serif;
-	color: var(--fg);
-	cursor: default;
-	user-select: none;
-}
-select {
-	color: var(--fg);
-	font: bold 1em "Lucida Console";
-}
-.hidden {
-	display: none; 
-}
-h1 {
-	text-align: center;
-}
-h1, h3 {
-	font-family: "Lucida Console";
-}
-h4 {
-	font-family: "Lucida Console";
-	margin: .2em;
-}
-.small {
-	font-size: 60%;
-}
-.tiny {
-	font-size: 50%;
-	font-family: "Lucida Sans Unicode";
-}
-a {
-	color: var(--fg-link);
-}
-em {
-	font-style: normal;
-	color: var(--fg-template);
-	text-shadow: 0 0 2px var(--fg-template);
-}
-[hint]::before {
-	font-weight: normal;
-	font-style: normal;
-	color: var(--fg-hint);
-	content: '[' attr(hint) '] ';
-}
-#problems ol {
-	list-style-type: upper-roman;
-	color: darkgray;
-	margin-bottom: 1em;
-}
-.paramount {
-	--fg-task: var(--fg-paramount);
-}
-.required {
-	--fg-task: var(--fg-required);
-}
-.optional {
-	--fg-task: var(--fg-optional);
-}
-.task {
-	font-family: "Lucida Console";
-	border-bottom: 1px solid var(--fg-task);
-	margin: 2px auto;
-	max-width: 40em;
-	list-style: none;
-}
-.task::before {
-	color: var(--fg-task);
-	text-shadow: 0 0 2px var(--fg-task);
-	content: attr(value) "%";
-	text-align: center;
-	margin: .5em;
-	width: 2em;
-	float: right;
-}
-.task > *{
-	margin-left: -2.5em;
-}
-.task > li {
-	color: var(--fg-task);
-	font-style: italic;
-}
-.spoiler {
-	cursor: pointer;
-}
-.spoiler:hover {
-	text-decoration: underline;
-	--symbol: "\00D7";
-}
-.spoiler::before {
-	color: var(--bg);
-	background: var(--fg-task);
-	content: var(--symbol, "?");
-	text-align: center;
-	font-style: normal;
-	margin-right: .25em;
-	padding: 0 .25em;
-	float: left;
-}
-.closed:hover {
-	text-decoration: underline;
-	--symbol: "\2026";
-}
-.closed + * {
-	display: none; 
-}
-</style>
+<link rel="stylesheet" type="text/css" href="src/style.css"></style>
+<script src="src/loader.js"></script>
 </head>
 <body onload="onLoad()">
 <h1>
@@ -450,18 +336,5 @@ em {
 		<li>если шаблоны и перегрузка не потребовались в ходе курсовой работы, допускается приведение <a href="https://ru.wikipedia.org/wiki/Ad_hoc">ad hoc</a> примера</li>
 	</ul>
 </ul>
-<script>
-const showVar = index => document.querySelectorAll('[v]').forEach(x => {with (x.classList)(x.getAttribute('v').split(' ').includes(`${index+1}`) ? remove('hidden') : add('hidden'))})
-const changeVar = event => showVar(event.target.selectedIndex)
-function onLoad() {
-document.querySelectorAll('a').forEach(x => x.setAttribute('target', '_blank'))
-document.getElementById('problems').setAttribute('style', 'list-style: none;')
-document.querySelectorAll('.nojs').forEach(x => x.classList.toggle('hidden'))
-document.querySelectorAll('[hint]').forEach(x => x.removeAttribute('hint'))
-document.querySelectorAll('.spoiler').forEach(x => (x.onclick = (() => x.classList.toggle('closed')))())
-with (document.getElementById('selector')) [...Array(15).keys()].forEach(x => {let o = document.createElement('option'); o.innerText = x+1; o.value="#test"; appendChild(o)})
-showVar(0)
-}
-</script>
 </body>
 </html>
