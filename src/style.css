@@ -39,25 +39,25 @@ select {
 	color: var(--fg);
 	font: bold 1em "Lucida Console";
 	background: var(--bg);
+	outline: none;
 	border: none;
 	border-bottom: 2px solid;
-	outline: none;
-	cursor: pointer;
 }
 #tab_container {
 	top: 0;
 	z-index: 1;
 	position: sticky;
-	background: var(--bg);
 	display: flex;
+	background: var(--bg);
+	//padding: 0 auto;
+	margin-bottom: 2px;
 	justify-content: center;
 }
 .tab {
 	color: var(--fg-light);
 	font: bold 1em "Lucida Sans Unicode";
 	text-align: center;
-	padding: 0 1em;
-	margin-bottom: 2px;
+	padding: 0 .5em;
 	--fg-tab: var(--fg-required);
 }
 .tab:nth-child(3) {
@@ -80,8 +80,7 @@ select {
 	transition: transform .1s ease-out;
 }
 .work {
-	margin: 0 1%;
-	min-width: 98%;
+	min-width: 100%;
 	overflow: hidden;
 	height: fit-content;
 }
@@ -156,9 +155,14 @@ em {
 	display: none; 
 }
 .wrapper {
+	margin: 0 1%;
 	overflow-x: hidden;
 }
 @media (pointer:fine) {
+	select:hover {
+		border-color: var(--fg-hint);
+		cursor: pointer;
+	}
 	.tab:not(.current):hover {
 		color: var(--fg-tab);
 		border-bottom: 2px solid;
