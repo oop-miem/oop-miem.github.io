@@ -66,11 +66,10 @@ select {
 }
 .light {
 	text-align: center;
-	padding: 0 1ex;
-	line-height: 2em;
-	font-size: 1.5em;
+	padding: 0 .5ex;
+	font-size: 1em;
 	margin-bottom: 2px;
-	color: var(--fg-hint);
+	color: var(--bg);
 }
 .current {
 	color: var(--fg);
@@ -165,7 +164,6 @@ em {
 	}
 	.light:hover {
 		cursor: pointer;
-		border-bottom: 2px solid;
 		text-shadow: 0 0 10px var(--fg);
 	}
 	.spoiler:hover {
