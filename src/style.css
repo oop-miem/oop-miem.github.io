@@ -15,9 +15,6 @@ body {
 	cursor: default;
 	user-select: none;
 	margin: 0;
-    max-width: 100%;
-	overflow-x: hidden;
-	position: relative
 }
 .dark {
 	--fg: #CCD;
@@ -85,7 +82,7 @@ select {
 .work {
 	margin: 0 1%;
 	min-width: 98%;
-	overflow-x: hidden;
+	overflow: hidden;
 	height: fit-content;
 }
 .hidden {
@@ -157,6 +154,9 @@ em {
 }
 .closed + * {
 	display: none; 
+}
+.wrapper {
+	overflow-x: hidden;
 }
 @media (pointer:fine) {
 	.tab:not(.current):hover {
