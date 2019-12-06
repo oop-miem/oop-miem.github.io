@@ -1,0 +1,30 @@
+noscript h1 {
+	margin: 1em 0 0;
+}
+.light, select {
+	display: none;
+}
+.var-fill::before {
+	content: 'Варианты';
+}
+.tab {
+	padding: .3em;
+}
+#work-container {
+	transform: none;
+	flex-direction: column;
+}
+.variants > li::before {
+	color: var(--fg-hint);
+	text-shadow: 0 0 2px var(--fg-hint);
+	//font-weight: bold;
+	content: attr(v) '.';
+	padding-right: .5em;
+}
+[hint]::before {
+	color: var(--fg-hint);
+	text-shadow: 0 0 2px var(--fg-hint);
+	font-weight: normal;
+	font-style: normal;
+	content: '[' attr(hint) '] ';
+}

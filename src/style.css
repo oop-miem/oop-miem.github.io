@@ -27,6 +27,7 @@ h1 {
 h1, h2 {
 	text-align: center;
 	font-family: "Lucida Console";
+	margin-bottom: 0;
 }
 h3 {
 	font: bold 1em "Lucida Sans Unicode";
@@ -43,24 +44,24 @@ select {
 	border: none;
 	border-bottom: 2px solid;
 }
-#tab_container {
+#tab-container {
 	top: 0;
 	z-index: 1;
 	position: sticky;
 	display: flex;
 	background: var(--bg);
-	//padding: 0 auto;
-	margin-bottom: 2px;
 	justify-content: center;
+	box-shadow: 0 .5em .5em var(--bg);
 }
-.tab {
+.js .tab {
 	color: var(--fg-light);
 	font: bold 1em "Lucida Sans Unicode";
 	text-align: center;
+	text-decoration: none;
 	padding: 0 .5em;
 	--fg-tab: var(--fg-required);
 }
-.tab:nth-child(3) {
+.js .tab:nth-child(3) {
 	--fg-tab: var(--fg-paramount);	
 }
 .light {
@@ -74,8 +75,13 @@ select {
 	color: var(--fg);
 	border-bottom: 2px solid;
 }
-#work_container {
+.var-fill::before {
+	content: 'Вариант №';
+}
+#work-container {
 	display: flex;
+	margin-top: -1em;
+	padding-top: 1em;
 	transform: translate(calc(var(--index, 0)*-100%));
 	transition: transform .1s ease-out;
 }
@@ -138,10 +144,10 @@ em {
 	color: var(--fg-task);
 	font-style: italic;
 }
-.spoiler {
+.js .spoiler {
 	cursor: pointer;
 }
-.spoiler::before {
+.js .spoiler::before {
 	color: var(--bg);
 	background: var(--fg-task);
 	content: var(--symbol, "?");
@@ -163,7 +169,7 @@ em {
 		border-color: var(--fg-hint);
 		cursor: pointer;
 	}
-	.tab:not(.current):hover {
+	.js .tab:not(.current):hover {
 		color: var(--fg-tab);
 		border-bottom: 2px solid;
 		cursor: pointer;
@@ -172,7 +178,7 @@ em {
 		cursor: pointer;
 		text-shadow: 0 0 10px var(--fg);
 	}
-	.spoiler:hover {
+	.js .spoiler:hover {
 		text-decoration: underline;
 		--symbol: "\00D7";
 	}
