@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+		<meta content="text/html" charset="utf-8">
+		<title>Style Checker 2019</title>
+		<style lang="css">
+		body {
+			--bg-first: #335;
+			--bg-second: #446;
+			--bg-dim: #779;
+			--fg-main: #dde;
+			--fg-bright: #fff;
+			--fg-action: #0af;
+			--fg-error: #f63;
+			--fg-type: #e9f;
+			--fg-key: #fec;
+			background: repeating-linear-gradient(45deg, var(--bg-second), var(--bg-second) 8px, var(--bg-first) 0, var(--bg-first) 29px);
+			background-attachment: fixed;
+			background-size: 41px 41px;
+			font-family: "Lucida Console";
+			color: var(--fg-main);
+			cursor: default;
+			user-select: none;
+		}
+		.light {
+			--bg-first: #fafaff;
+			--bg-second: #eef;
+			--bg-dim: #bbc;
+			--fg-main: #668;
+			--fg-bright: #224;
+			--fg-type: #e6f;
+			--fg-key: #c93;
+		}
+		h1 {
+			margin: 16px -8px;
+			width: auto;
+			background: var(--bg-first);
+			font-family: "Lucida Sans Unicode";
+			text-align: center;
+			text-transform: uppercase;
+			border: solid 8px var(--bg-second);
+			border-style: solid none;
+		}
+		.button {
+			margin: auto;
+			width: fit-content;
+			padding: 8px;
+			background: var(--bg-first);
+			font-weight: bold; font-size: 1.3em; color: var(--fg-action);
+			text-align: center;
+			border: solid 3px;
+			border-radius: 1em;
+		}
+		.button:active {
+			background: var(--bg-dim);
+			color: var(--fg-main);
+		}
+		.toggle {
+			position: fixed;
+			right: 16px; bottom: 48px;
+			width: 16px; height: 16px;
+		}
+		a {
+			color: var(--fg-action);
+			cursor: pointer;
+		}
+		.K, .I {
+			color: var(--bg-dim);
+		}
+		.O {
+			color: var(--fg-bright);
+			text-shadow: 0 0 2px var(--fg-bright);
+		}
+		.T {
+			color: var(--fg-type);
+		}
+		.V {
+			color: var(--fg-key);
+		}
+		.error-length {
+			margin-right: -81ch;
+			padding-right: 81ch;
+			overflow-x: visible;
+			color: var(--fg-error);
+			text-shadow: 0 0 2px var(--fg-error);
+			background-image: linear-gradient(to right, transparent 85%, var(--fg-error) 130%);
+		}	
+		#source-list {
+			display: flex;
+			flex-flow: column wrap;
+			justify-content: flex-start;
+			align-items: flex-start;
+			align-content: center;
+		}
+		.source {
+			display: inline-block;
+			margin: 8px 1em 24px;
+			background: var(--bg-first);
+			border: solid 8px var(--bg-second);
+			border-bottom-right-radius: 3em;
+		}
+		.source__lines {
+			float: left;
+			width: 4ch;
+			padding-right: .5ch;
+			background: var(--bg-second);
+			color: var(--bg-dim);
+			white-space: pre;
+			text-align: right;
+			
+		}
+		.source__code {
+			width: 80ch;
+			padding-left: .5ch;
+			white-space: pre;
+			overflow-x: hidden;
+			text-overflow: ellipsis;
+			user-select: text;
+		}
+		.source__title {
+			position: sticky;
+			top: 0px;
+			margin-top: -8px; padding: 4px 0;
+			background: var(--bg-second);
+			font-size: 2em; color: var(--fg-main);
+			text-transform: lowercase;
+		}
+		::selection {
+			color: var(--fg-bright);
+			background: var(--fg-action);
+		}
+		#source-list {
+			margin-bottom: 4em;
+		}
+		#footer {
+			position: fixed;
+			left: 0; bottom: 0;
+			width: 100%;
+			padding: 8px;
+			background: var(--bg-first);
+			border-top: solid 8px var(--bg-second);
+		}
+		@media (pointer:fine) {
+			a:hover {
+				background: var(--bg-second);
+			}		
+			.button:hover {
+				background: var(--bg-second);
+			}
+			.toggle:hover {
+				box-shadow: 0 0 6px 6px var(--fg-main);
+			}
+		}
+		</style>
+</head>
+<body onload="">
+<h1>Проверка оформления кода</h1>
+<input id="input" type="file" accept=".h,.cpp" multiple onchange="openFiles(event)" style="display: none"/>
+<div class="button" onclick="document.getElementById('input').click()">Выбрать файлы</div>
+<div id="source-list"></div>
+<div id="footer" style="display: none"></div>
+<div class="toggle button" onclick="document.body.classList.toggle('light')"></div>
+<script>
+var data
+function openFiles(event) {
+	const input = event.target
+	if (input.files.length == 0)
+		return
+	data = []
+	function readFile(index, callback) {
+		if (index >= input.files.length)
+			return callback()
+		let reader = new FileReader()
+		reader.onload = function(e) {
+			data.push({'filename': input.files[index].name, 'code': e.target.result})
+			readFile(index + 1, callback)
+		}
+		reader.readAsText(input.files[index])
+	}
+	readFile(0, showData)
+}
+function showData() {
+	const keywords = new Set('and asm assert break case catch class const constexpr const_cast continue decltype default delete do dynamic_cast else emit enum explicit false final for foreach forever friend if inline mutable namespace new not nullptr operator or override private protected public reinterpret_cast return signals sizeof slots static static_cast std struct switch template this throw true try typedef typename using virtual volatile while xor'.split` `)
+	const pair = (tag, text) => ({tag:tag, text:text})
+	const tokenize = (text, rules=[[/(\/\*.*?\*\/|\/\/.+?\n)/s, 'I'], [/(#.+)/, 'P'], [/(""|".*?[^\\]"|''|'.*?[^\\]')/, 'I']]) => (rules[0] ? text.split(rules[0][0]).map((x, i) => i%2 ? pair(rules[0][1], x) : tokenize(x, rules.slice(1))) : text.split(/(\w+)/).map((x, i) => pair(i%2 ? (/^\d+\w*$/.test(x) ? 'I' : (keywords.has(x) ? 'K' : 'V')) : (/[^\s]/.test(x) ? 'O' : 'S'), x))).flat()
+	const definitions = new Set('class enum namespace struct typename'.split` `)
+	const filenames = new Set(data.map(x => x.filename))
+	let types = new Set('auto bool char char16_t char32_t double float int long qint8 qint16 qint32 qint64 qlonglong qreal quint8 quint16 quint32 quint64 quintptr qulonglonguchar short signed string uint ulong unsigned ushort vector void'.split` `)
+	let custom_types = new Set()
+	const make_id = text => text.replace(/\W/, '_')
+	for (let datum of data) {
+		datum.tokens = tokenize(datum.code)
+		datum.tokens.filter((x, i, a) => x.tag == 'V' && i>2 && a[i-2].tag == 'K' && definitions.has(a[i-2].text) && (i < 4 || a[i-4].text!='using')).forEach(x => custom_types.add(x.text))
+		datum.tokens.filter(x => x.tag == 'P').forEach(x => (path => x.tag = path ? (filenames.has(path) ? (x.id = make_id(path), 'F') : (path.split`/`.filter(t => t && t[0] == 'Q').forEach(t => types.add(t)), 'I')) : 'I')((x.text.match(/#include\s+[<"]([^>"]+)[>"]/) || {1: ""})[1]))
+	}
+	custom_types.forEach(x => types.add(x))
+	data.forEach(datum => datum.tokens.filter(t => t.tag == 'V' && types.has(t.text)).forEach(t => t.tag = 'T'))
+	let custom_variables = new Set()
+	let custom_functions = new Set()
+	/* var loop */
+	data.forEach(datum => datum.tokens.filter(t => t.tag == 'T' && !custom_types.has(t.text)).forEach(t => t.tag = 'K'))
+	const clear = text => text.replace(/&/g, '&amp').replace(/</g, '&lt').replace(/>/g, '&gt')
+	const make_span = t => t.tag == 'S' ? t.text : (t.tag == 'F' ? `<a href="#${t.id}">${clear(t.text)}</a>` : `<span class='${t.tag}'>${clear(t.text)}</span>`)
+	
+	let sourcelist = document.getElementById('source-list')
+	sourcelist.innerHTML = ""
+	for (let datum of data) {
+		var box = document.createElement("div")
+		box.id = make_id(datum.filename)
+		box.className = "source"
+		var lines = document.createElement("div")
+		lines.className = "source__lines"
+		lines.innerHTML = datum.code.split('\n').map((x, i) => x.length>81 ? make_span({tag:'error-length',text:`${i+1}`}) : i+1).join`\n`
+		var code = document.createElement("div")
+		code.className = "source__code"
+		code.innerHTML = datum.tokens.map(t => make_span(t)).join``
+		var title = document.createElement("div")
+		title.className = "source__title"
+		title.innerText = datum.filename
+		box.appendChild(title)
+		box.appendChild(lines)
+		box.appendChild(code)
+		sourcelist.appendChild(box)
+	}
+	with (document.getElementById('footer'))
+		if (hasAttribute("style")) {
+			let button = document.getElementsByClassName('button')[0]
+			button.innerText = 'Выбрать другие файлы'
+			appendChild(button)
+			removeAttribute("style")
+		}
+}
+</script>
+</body>
+</html>
