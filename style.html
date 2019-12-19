@@ -13,7 +13,7 @@
 			--fg-action: #0af;
 			--fg-error: #f63;
 			--fg-type: #e9f;
-			--fg-key: #fec;
+			--fg-key: #edb;
 			background: repeating-linear-gradient(45deg, var(--bg-second), var(--bg-second) 8px, var(--bg-first) 0, var(--bg-first) 29px);
 			background-attachment: fixed;
 			background-size: 41px 41px;
@@ -70,6 +70,25 @@
 		.O {
 			color: var(--fg-bright);
 			text-shadow: 0 0 2px var(--fg-bright);
+		}
+		.ES, .EN {
+			color: var(--fg-error);
+			text-shadow: 0 0 2px var(--fg-error);
+		}
+		.ES::before, .EN::before {
+			float: right;
+			position: relative;
+			color: var(--bg-first);
+			text-shadow: 0 0 2px var(--bg-first);
+			background: var(--fg-error);
+			border-radius: .2em;
+		}
+		.ES::before {
+			content: "x";
+		}
+		.EN::before  {
+			text-decoration: none;
+			content: " ";
 		}
 		.T {
 			color: var(--fg-type);
@@ -180,7 +199,7 @@ function openFiles(event) {
 	readFile(0, showData)
 }
 function showData() {
-	const keywords = new Set('and asm assert break case catch class const constexpr const_cast continue decltype default delete do dynamic_cast else emit enum explicit false final for foreach forever friend if inline mutable namespace new not nullptr operator or override private protected public reinterpret_cast return signals sizeof slots static static_cast std struct switch template this throw true try typedef typename using virtual volatile while xor'.split` `)
+	const keywords = new Set('and asm assert break case catch class const constexpr const_cast continue decltype default delete do dynamic_cast else emit enum explicit false final for foreach forever friend fstream if inline mutable namespace new not nullptr operator or override private protected public reinterpret_cast return signals sizeof slots static static_cast std struct switch template this throw true try typedef typename using virtual volatile while xor'.split` `)
 	const pair = (tag, text) => ({tag:tag, text:text})
 	const tokenize = (text, rules=[[/(\/\*.*?\*\/|\/\/.+?\n)/s, 'I'], [/(#.+)/, 'P'], [/(""|".*?[^\\]"|''|'.*?[^\\]')/, 'I']]) => (rules[0] ? text.split(rules[0][0]).map((x, i) => i%2 ? pair(rules[0][1], x) : tokenize(x, rules.slice(1))) : text.split(/(\w+)/).map((x, i) => pair(i%2 ? (/^\d+\w*$/.test(x) ? 'I' : (keywords.has(x) ? 'K' : 'V')) : (/[^\s]/.test(x) ? 'O' : 'S'), x))).flat()
 	const definitions = new Set('class enum namespace struct typename'.split` `)
@@ -195,8 +214,12 @@ function showData() {
 	}
 	custom_types.forEach(x => types.add(x))
 	data.forEach(datum => datum.tokens.filter(t => t.tag == 'V' && types.has(t.text)).forEach(t => t.tag = 'T'))
-	let custom_variables = new Set()
-	let custom_functions = new Set()
+	//let custom_variables = new Set()
+	//let custom_functions = new Set()
+	data.forEach(datum => datum.tokens.filter(t => t.tag == 'O').forEach(t => {
+		if (/(::|->|[\.!~\(\[])\s/.test(t.text) || /\s(::|->|[\.,\)\];])/.test(t.text)) t.tag += ' ES'
+		if (/[-\+\*\/][^=>\s\);\+-]/.test(t.text) || /[^\s\+][\+\*\/]/.test(t.text) || /\S==?\S/.test(t.text)) t.tag += ' EN'
+	}))
 	/* var loop */
 	data.forEach(datum => datum.tokens.filter(t => t.tag == 'T' && !custom_types.has(t.text)).forEach(t => t.tag = 'K'))
 	const clear = text => text.replace(/&/g, '&amp').replace(/</g, '&lt').replace(/>/g, '&gt')
