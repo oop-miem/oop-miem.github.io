@@ -2,7 +2,7 @@
 <html>
 <head>
 		<meta content="text/html" charset="utf-8">
-		<title>Style Checker 2019</title>
+		<title>Style Checker 2020</title>
 		<style lang="css">
 		body {
 			--bg-first: #335;
@@ -77,18 +77,18 @@
 		}
 		.ES::before, .EN::before {
 			float: right;
-			position: relative;
-			color: var(--bg-first);
-			text-shadow: 0 0 2px var(--bg-first);
-			background: var(--fg-error);
-			border-radius: .2em;
+			padding-left: .3em;
+			color: var(--bg-error);
+			text-shadow: 0 0 3px var(--bg-error);
+			box-shadow: 0 0 1.5px 1.5px var(--fg-error);
+			background: var(--bg-first);
+			border-radius: .5em 0 0 .5em;
 		}
 		.ES::before {
-			content: "x";
+			content: "лишний пробел";
 		}
 		.EN::before  {
-			text-decoration: none;
-			content: " ";
+			content: "нет пробела";
 		}
 		.T {
 			color: var(--fg-type);
@@ -103,7 +103,7 @@
 			color: var(--fg-error);
 			text-shadow: 0 0 2px var(--fg-error);
 			background-image: linear-gradient(to right, transparent 85%, var(--fg-error) 130%);
-		}	
+		}
 		#source-list {
 			display: flex;
 			flex-flow: column wrap;
@@ -159,6 +159,10 @@
 			background: var(--bg-first);
 			border-top: solid 8px var(--bg-second);
 		}
+		.ver {
+			color: var(--bg-dim);
+			font-size: .6em;
+		}
 		@media (pointer:fine) {
 			a:hover {
 				background: var(--bg-second);
@@ -169,11 +173,14 @@
 			.toggle:hover {
 				box-shadow: 0 0 6px 6px var(--fg-main);
 			}
+			.EN:hover::before, .ES:hover::before {
+				opacity: .2;
+			}
 		}
 		</style>
 </head>
 <body onload="">
-<h1>Проверка оформления кода</h1>
+<h1>Проверка оформления кода<span class="ver">v2</span></h1>
 <input id="input" type="file" accept=".h,.cpp" multiple onchange="openFiles(event)" style="display: none"/>
 <div class="button" onclick="document.getElementById('input').click()">Выбрать файлы</div>
 <div id="source-list"></div>
@@ -218,7 +225,7 @@ function showData() {
 	//let custom_functions = new Set()
 	data.forEach(datum => datum.tokens.filter(t => t.tag == 'O').forEach(t => {
 		if (/(::|->|[\.!~\(\[])\s/.test(t.text) || /\s(::|->|[\.,\)\];])/.test(t.text)) t.tag += ' ES'
-		if (/[-\+\*\/][^=>\s\);\+-]/.test(t.text) || /[^\s\+][\+\*\/]/.test(t.text) || /\S==?\S/.test(t.text)) t.tag += ' EN'
+		if (/(\S|operator)(>>|<<|[!\*\/\+-]=|[%\/\?])\S/.test(t.text) || /[^\s\+-][\+-][^>\s\+-]/.test(t.text) || /(\S|operator)==?\S/.test(t.text)) t.tag += ' EN'
 	}))
 	/* var loop */
 	data.forEach(datum => datum.tokens.filter(t => t.tag == 'T' && !custom_types.has(t.text)).forEach(t => t.tag = 'K'))
